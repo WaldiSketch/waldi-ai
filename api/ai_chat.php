@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 // =====================
 // DAPATKAN API KEY DI: https://aistudio.google.com/
 $API_KEY = getenv('GEMINI_API_KEY') ?: 'AIzaSyDu_4P5d4ubBCshGHasGzPK8m9GHTUyo_Q'; 
-$model = "gemma-3-27b-it";
+$model = "gemini-2.5-flash";
 
 // =====================
 // AMBIL INPUT
