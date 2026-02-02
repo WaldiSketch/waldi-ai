@@ -7,7 +7,7 @@ header("Content-Type: application/json");
 // =====================
 // DAPATKAN API KEY DI: https://aistudio.google.com/
 $API_KEY = getenv('GEMINI_API_KEY') ?: 'AIzaSyDu_4P5d4ubBCshGHasGzPK8m9GHTUyo_Q'; 
-$model = "gemini-1.5-flash";
+$model = "gemini-3-flash-preview";
 
 // =====================
 // AMBIL INPUT
@@ -26,11 +26,11 @@ if ($message === '') {
 $url = "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$API_KEY";
 
 $data = [
-    // "system_instruction" => [
-    //     "parts" => [
-    //         ["text" => "Jawab hanya satu kalimat pendek. Jangan pakai bold, tanda bintang, markdown, daftar, atau gaya artikel. Jawab santai seperti chat."]
-    //     ]
-    // ],
+    "system_instruction" => [
+        "parts" => [
+            ["text" => "Jawab hanya satu kalimat pendek. Jangan pakai bold, tanda bintang, markdown, daftar, atau gaya artikel. Jawab santai seperti chat."]
+        ]
+    ],
     "contents" => [
         [
             "role" => "user",
@@ -40,7 +40,7 @@ $data = [
         ]
     ],
     "generationConfig" => [
-        "maxOutputTokens" => 40
+        "maxOutputTokens" => 100
     ]
 ];
 
@@ -75,26 +75,17 @@ $result = json_decode($response, true);
 // =====================
 // AMBIL JAWABAN
 // =====================
-// Parsing response Gemini
 if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
     $reply = $result['candidates'][0]['content']['parts'][0]['text'];
 } else {
-    // Cek jika ada error message dari API
     $apiError = $result['error']['message'] ?? 'Tidak ada pesan error dari Google';
-    $reply = "Error ($httpCode): " . $apiError . " | Raw: " . substr($response, 0, 100);
+    $reply = "Error ($httpCode): " . $apiError . " | Full Response: " . $response;
 }
 
 // =====================
-// FILTER PAKSA (ANTI ARTIKEL)
+// FILTER PAKSA
 // =====================
-
-// hapus markdown (** ## _ `)
 $reply = preg_replace('/[*#_`]/', '', $reply);
-
-// ambil 1 kalimat saja (optional, Gemini biasanya patuh system instruction tapi jaga-jaga)
-$reply = preg_split('/[.!?]/', $reply)[0];
-
-// rapikan spasi
 $reply = trim($reply);
 
 // =====================
