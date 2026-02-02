@@ -5,6 +5,8 @@
     }
   },
   "routes": [
+    { "src": "/api/ai_chat.php", "dest": "/api/ai_chat.php" },
+    { "src": "/ai_chat.php", "dest": "/api/ai_chat.php" },
     { "src": "/(.*)", "dest": "/api/index.php" }
   ]
 }
