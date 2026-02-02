@@ -1,34 +1,48 @@
 <?php
 /**
- * File Konfigurasi Database
- * Website AI Management System
+ * File Konfigurasi Database - Optimized for Vercel & TiDB Cloud
  */
 
-// Konfigurasi Database
-define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
-define('DB_NAME', getenv('DB_NAME') ?: 'website_ai');
+// 1. Initialize MySQLi
+$conn = mysqli_init();
 
-// Koneksi ke Database
+// 2. Mandatory: Enable SSL for TiDB Cloud Serverless
+mysqli_ssl_set($conn, NULL, NULL, NULL, NULL, NULL);
+
+// 3. Database Credentials from Vercel Environment Variables
+// Ensure these keys match exactly what you typed in Vercel Settings
+$host = getenv('TIDB_HOST');     // e.g., gateway01.us-west-2.prod.aws.tidbcloud.com
+$user = getenv('TIDB_USER');     // e.g., xxxxxxx.root
+$pass = getenv('TIDB_PASSWORD'); // Your generated TiDB password
+$db   = getenv('TIDB_DATABASE'); // website_ai
+$port = 4000;                    // TiDB default port
+
+// 4. Establish Connection (Forces TCP/IP via Port 4000)
 try {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-    
-    // Cek koneksi
-    if ($conn->connect_error) {
-        die("Koneksi database gagal: " . $conn->connect_error);
+    $success = mysqli_real_connect(
+        $conn, 
+        $host, 
+        $user, 
+        $pass, 
+        $db, 
+        $port, 
+        NULL, 
+        MYSQLI_CLIENT_SSL
+    );
+
+    if (!$success) {
+        throw new Exception("Koneksi gagal: " . mysqli_connect_error());
     }
-    
-    // Set charset UTF8
+
+    // Set charset to support modern characters
     $conn->set_charset("utf8mb4");
-    
+
 } catch (Exception $e) {
     die("Error koneksi database: " . $e->getMessage());
 }
 
 /**
- * Fungsi untuk membersihkan input dari user
- * Mencegah SQL Injection dan XSS
+ * Utility Functions
  */
 function clean_input($data) {
     global $conn;
@@ -38,15 +52,11 @@ function clean_input($data) {
     return $conn->real_escape_string($data);
 }
 
-/**
- * Fungsi untuk redirect
- */
 function redirect($url) {
     header("Location: " . $url);
     exit();
 }
 
-// Memulai session
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
