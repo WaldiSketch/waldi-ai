@@ -60,6 +60,10 @@ curl_setopt_array($ch, [
 
 $response = curl_exec($ch);
 
+// DEBUG: Log raw response
+$maskedUrl = str_replace($API_KEY, 'HIDDEN_KEY', $url);
+file_put_contents('debug_log.txt', "URL: $maskedUrl\nResponse: " . $response . "\n\n", FILE_APPEND);
+
 if (curl_errno($ch)) {
     echo json_encode(["response" => "Error koneksi: " . curl_error($ch)]);
     curl_close($ch);
@@ -77,7 +81,7 @@ if (isset($result['candidates'][0]['content']['parts'][0]['text'])) {
     $reply = $result['candidates'][0]['content']['parts'][0]['text'];
 } else {
     // Cek jika ada error message dari API
-    $errorMsg = $result['error']['message'] ?? 'AI tidak membalas';
+    $errorMsg = $result['error']['message'] ?? 'AI tidak membalas. Raw: ' . $response;
     $reply = "Error: " . $errorMsg;
 }
 
