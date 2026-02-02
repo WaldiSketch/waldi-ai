@@ -55,7 +55,9 @@ curl_setopt_array($ch, [
         "Content-Type: application/json"
     ],
     CURLOPT_POSTFIELDS => json_encode($data),
-    CURLOPT_TIMEOUT => 60
+    CURLOPT_TIMEOUT => 60,
+    CURLOPT_SSL_VERIFYPEER => false, // Bypass SSL (Dev Only)
+    CURLOPT_SSL_VERIFYHOST => 0      // Bypass SSL (Dev Only)
 ]);
 
 $response = curl_exec($ch);
