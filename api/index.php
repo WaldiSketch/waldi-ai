@@ -547,7 +547,14 @@ $result_konten = $conn->query($query_konten);
                     })
                 });
                 
-                const data = await response.json();
+                const rawText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (e) {
+                    console.error("JSON Parse Error. Server returned:", rawText);
+                    return "Error: Server returned invalid JSON. Check console for details.";
+                }
                 
                 if (data.response) {
                     return data.response;
