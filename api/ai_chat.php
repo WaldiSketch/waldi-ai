@@ -5,7 +5,7 @@ header("Content-Type: application/json");
 // KONFIGURASI
 // =====================
 // DAPATKAN API KEY DI: https://aistudio.google.com/
-$API_KEY = getenv('AIzaSyDu_4P5d4ubBCshGHasGzPK8m9GHTUyo_Q'); 
+$API_KEY = getenv('GEMINI_API_KEY'); 
 $model = "gemini-3-flash-preview";
 
 // =====================
